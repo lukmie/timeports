@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/report")
@@ -36,6 +34,6 @@ public class ReportController {
 
     @GetMapping("/csv/flights-per-client")
     public ResponseEntity<String> getFlightsByClientCSV() {
-        return ResponseEntity.ok(reportService.configureCsvWriterAndDownload());
+        return ResponseEntity.ok(reportService.configureCsvWriterAndPrint());
     }
 }

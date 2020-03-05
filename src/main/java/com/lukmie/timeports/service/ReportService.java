@@ -41,7 +41,7 @@ public class ReportService {
         return buildFlightReport(objects);
     }
 
-    public String configureCsvWriterAndDownload() {
+    public String configureCsvWriterAndPrint() {
         StringWriter stringWriter = new StringWriter();
         try (ICsvBeanWriter csvWriter = new CsvBeanWriter(stringWriter, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
             final String[] header = {"name", "surname", "client", "travelReservation", "sum"};
