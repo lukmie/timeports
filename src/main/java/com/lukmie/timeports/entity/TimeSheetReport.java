@@ -15,9 +15,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
 
-@Entity(name = "timesheetreport")
+@Entity
+@Table(name = "timesheetreport")
 //@EqualsAndHashCode(exclude = {""})
 //@ToString(exclude = "")
 @Getter
@@ -25,17 +27,20 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TimesheetReport {
+public class TimeSheetReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Integer year;
+    private Integer month;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountid")
     private Account account;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeSheetReport")
     private List<DailyTime> dailyTimes;
 }
