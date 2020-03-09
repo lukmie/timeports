@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+
+//    @Query("select p from Project p left join DailyTime dt on p.id = dt where sum(worktime)")
+//    Page<Project> findAllX(Pageable pageable);
+
 }

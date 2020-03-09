@@ -3,7 +3,7 @@ package com.lukmie.timeports.controller;
 import com.lukmie.timeports.dto.AccountDto;
 import com.lukmie.timeports.dto.ReportEntryDto;
 import com.lukmie.timeports.entity.Account;
-import com.lukmie.timeports.service.AccountService;
+import com.lukmie.timeports.service.JitReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,32 +21,53 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/jit-report")
 public class JitReportController {
 
-    private final AccountService accountService;
+    private final JitReportService jitReportService;
 
     @GetMapping("/account-worktime")
-    public ResponseEntity<ReportEntryDto> getWorkTimeByAccount(@PageableDefault(size = 15) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.getAllWorkTime(pageable));
+    public ResponseEntity<Page<ReportEntryDto>> getAllWorkTimeByAccount(@PageableDefault(size = 15) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(jitReportService.getAllAccountsWorkTime(pageable));
     }
 
     @GetMapping("/account-worktime/{id}")
     public ResponseEntity<ReportEntryDto> getWorkTimeByAccount(@PathVariable("id") Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.getWorkTimeByAccount(id));
+        return ResponseEntity.status(HttpStatus.OK).body(jitReportService.getWorkTimeSumByAccount(id));
     }
 
+    @GetMapping("/project-worktime")
+    public ResponseEntity<Page<ReportEntryDto>> getAllWorkTimeByProject(@PageableDefault(size = 15) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(jitReportService.getAllProjectsWorkTime(pageable));
+    }
+
+    @GetMapping("/project-worktime/{id}")
+    public ResponseEntity<ReportEntryDto> getWorkTimeByProject(@PathVariable("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(jitReportService.getWorkTimeSumByProject(id));
+    }
+
+    @GetMapping("/client-worktime")
+    public ResponseEntity<Page<ReportEntryDto>> getAllWorkTimeByClient(@PageableDefault(size = 15) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(jitReportService.getAllClientsWorkTime(pageable));
+    }
+
+    @GetMapping("/client-worktime/{id}")
+    public ResponseEntity<ReportEntryDto> getWorkTimeByClient(@PathVariable("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(jitReportService.getWorkTimeSumByClient(id));
+    }
+
+    // TODO: 08.03.2020 below maybe not useful, to delete
 
     @GetMapping
     public Page<AccountDto> getAll(@PageableDefault(size = 15) Pageable pageable,
                                    @RequestParam(defaultValue = "surname", required = false) String sortBy) {
-        return accountService.getAll(pageable);
+        return jitReportService.getAll(pageable);
     }
 
     @GetMapping("/d")
     public Page<Account> getAllX(@PageableDefault(size = 15) Pageable pageable) {
-        return accountService.getAllWorkTime(pageable);
+        return jitReportService.getAllWorkTime(pageable);
     }
 
     @GetMapping("/dx")
     public Page<ReportEntryDto> getAllXX(@PageableDefault(size = 5) Pageable pageable) {
-        return accountService.doSmthAll(pageable);
+        return jitReportService.getAllAccountsWorkTime(pageable);
     }
 }
