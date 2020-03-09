@@ -19,6 +19,12 @@ public interface DailyTimeRepository extends JpaRepository<DailyTime, Long> {
     @Query("select sum(worktime) from DailyTime dt where dt.client.id is not null and worktime is not null and dt.client.id = :id")
     Optional<Long> findSumWorkTimeForClient(Long id);
 
+    @Query(value = "select sum(dt.worktime) from DailyTime as dt left join TimeSheetReport as tsr on dt.timesheetreportid = tsr.id where dt.worktime is not null and tsr.accountid = :accountId and dt.projectid = :projectId", nativeQuery = true)
+    Optional<Long> findSumWorkTimeForProjectByAccount(Long accountId, Long projectId);
+
+    @Query(value = "select sum(dt.worktime) from DailyTime as dt left join TimeSheetReport as tsr on dt.timesheetreportid = tsr.id where dt.worktime is not null and tsr.accountid = :accountId and dt.clientid = :clientId", nativeQuery = true)
+    Optional<Long> findSumWorkTimeForClientByAccount(Long accountId, Long clientId);
+
 //    @Query(value = "select dt.id, dt.worktime, dt.client, dt.project, dt.timeSheetReport from DailyTime dt join DailyTime.timeSheetReport t on dt.timesheetreportid = t.id where DailyTime.timeSheetReport. = :id")
 //    List<DailyTime> findAllByxAccountId(Long id);
 

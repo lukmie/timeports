@@ -1,6 +1,5 @@
 package com.lukmie.timeports.service;
 
-import com.lukmie.timeports.dto.AccountDto;
 import com.lukmie.timeports.dto.ReportEntryDto;
 import com.lukmie.timeports.entity.Account;
 import com.lukmie.timeports.entity.Client;
@@ -73,6 +72,19 @@ public class JitReportService {
         return firstReportMapper.toProjectReportEntryDto(project, workTimeSum / HOURS_CONVERTER);
     }
 
+    public Page<ReportEntryDto> getWorkTimeSumByProjectForAccount(Long id, Pageable pageable) {
+
+        List<ReportEntryDto> list = accountRepository.findAll().stream()
+                .map(a -> {
+                    Long workTimeSum = dailyTimeRepository.findSumWorkTimeForProjectByAccount(a.getId(), id).orElse(0L);
+                    return firstReportMapper.toAccountReportEntryDto(a, workTimeSum / HOURS_CONVERTER);
+                })
+                .filter(r -> r.getValue() != 0)
+                .collect(Collectors.toList());
+
+        return pageImplReportEntry(pageable, list);
+    }
+
     public Page<ReportEntryDto> getAllClientsWorkTime(Pageable pageable) {
         Page<Client> clients = clientRepository.findAll(pageable);
 
@@ -90,6 +102,25 @@ public class JitReportService {
         Long workTimeSum = dailyTimeRepository.findSumWorkTimeForClient(id).orElse(0L);
 
         return firstReportMapper.toClientReportEntryDto(client, workTimeSum / HOURS_CONVERTER);
+    }
+
+    public Page<ReportEntryDto> getWorkTimeSumByClientForAccount(Long id, Pageable pageable) {
+
+        List<ReportEntryDto> list = accountRepository.findAll().stream()
+                .map(a -> {
+                    Long workTimeSum = dailyTimeRepository.findSumWorkTimeForClientByAccount(a.getId(), id).orElse(0L);
+                    return firstReportMapper.toAccountReportEntryDto(a, workTimeSum / HOURS_CONVERTER);
+                })
+                .filter(r -> r.getValue() != 0)
+                .collect(Collectors.toList());
+
+        return pageImplReportEntry(pageable, list);
+    }
+
+    private Page<ReportEntryDto> pageImplReportEntry(Pageable pageable, List<ReportEntryDto> list) {
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), list.size());
+        return new PageImpl<>(list.subList(start, end), pageable, list.size());
     }
 
     private double getWorkTimeForSingleAccount(Account account) {
@@ -110,20 +141,20 @@ public class JitReportService {
 //        return accountRepository.findAll();
 //    }
 
-    public Page<AccountDto> getAll(Pageable pageable) {
-        List<AccountDto> list = accountRepository.findAll().stream()
-                .map(AccountDto::toAccountDto)
-                .collect(Collectors.toList());
-
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), list.size());
-
-        return new PageImpl<>(list.subList(start, end), pageable, list.size());
-    }
-
-    public Page<Account> getAllWorkTime(Pageable pageable) {
-        return accountRepository.findAll(pageable);
-    }
+//    public Page<AccountDto> getAll(Pageable pageable) {
+//        List<AccountDto> list = accountRepository.findAll().stream()
+//                .map(AccountDto::toAccountDto)
+//                .collect(Collectors.toList());
+//
+//        int start = (int) pageable.getOffset();
+//        int end = Math.min(start + pageable.getPageSize(), list.size());
+//
+//        return new PageImpl<>(list.subList(start, end), pageable, list.size());
+//    }
+//
+//    public Page<Account> getAllWorkTime(Pageable pageable) {
+//        return accountRepository.findAll(pageable);
+//    }
 
 
 }
