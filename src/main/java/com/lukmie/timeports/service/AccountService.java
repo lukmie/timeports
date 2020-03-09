@@ -4,9 +4,11 @@ import com.lukmie.timeports.dto.AccountDto;
 import com.lukmie.timeports.dto.ReportEntryDto;
 import com.lukmie.timeports.entity.Account;
 import com.lukmie.timeports.entity.DailyTime;
+import com.lukmie.timeports.entity.Project;
 import com.lukmie.timeports.mapper.FirstReportMapper;
 import com.lukmie.timeports.repository.AccountRepository;
 import com.lukmie.timeports.repository.DailyTimeRepository;
+import com.lukmie.timeports.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,47 +25,30 @@ import java.util.stream.Collectors;
 @Service
 public class AccountService {
 
-    private final static double HOURS_CONVERTER = 3600*1000;
+    private final static double HOURS_CONVERTER = 3600 * 1000;
 
     private final AccountRepository accountRepository;
+    private final ProjectRepository projectRepository;
     private final DailyTimeRepository dailyTimeRepository;
     private final FirstReportMapper firstReportMapper;
 
-    public Page<ReportEntryDto> doSmthAll(Pageable pageable) {
+    public Page<ReportEntryDto> getAllAccountsWorkTime(Pageable pageable) {
         Page<Account> accounts = accountRepository.findAll(pageable);
 
-        dailyTimeRepository.findAllByAccountIdX();
-
-        return accounts.map(d -> {
-//            double sum = d.getTimeSheetReports().stream()
-//                    .flatMap(r -> r.getDailyTimes().stream())
-//                    .filter(dt -> Objects.nonNull(dt.getWorktime()))
-//                    .map(DailyTime::getWorktime)
-//                    .mapToDouble(workTime -> workTime.doubleValue() / HOURS_CONVERTER)
-//                    .sum();
-            Optional<Long> allByAccountId = dailyTimeRepository.findAllByAccountId(d.getId());
-
-
-            ReportEntryDto finalReportEntryDto = firstReportMapper.toReportEntryDto(d);
-            allByAccountId.ifPresent(l -> finalReportEntryDto.setValue(l / HOURS_CONVERTER));
-
-//            if (Objects.nonNull(allByAccountId)) {
-//                reportEntryDto = firstReportMapper.toReportEntryDto(d);
-////            reportEntryDto.setValue(1255125 / HOURS_CONVERTER);
-//                reportEntryDto.setValue((double)allByAccountId);
-//            }
-
-            return finalReportEntryDto;
+        return accounts.map(account -> {
+            Optional<Long> workTimeSum = dailyTimeRepository.findSumWorkTimeForAccount(account.getId());
+            return firstReportMapper.toAccountReportEntryDto(account,
+                    workTimeSum.orElse(0L) / HOURS_CONVERTER);
         });
     }
 
-    public ReportEntryDto getWorkTimeByAccount(Long id) {
+    public ReportEntryDto getWorkTimeSumByAccount(Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Account with id: %d was not found.", id)));
 
         Double workTimeSum = getWorkTimeForSingleAccount(account);
 
-        return firstReportMapper.toReportEntryDto(account, workTimeSum);
+        return firstReportMapper.toAccountReportEntryDto(account, workTimeSum);
     }
 
     private double getWorkTimeForSingleAccount(Account account) {
@@ -75,14 +60,26 @@ public class AccountService {
                 .sum();
     }
 
+    public Page<ReportEntryDto> getAllProjectsWorkTime(Pageable pageable) {
+        Page<Project> projects = projectRepository.findAll(pageable);
 
+        return projects.map(project -> {
+            Optional<Long> workTimeSum = dailyTimeRepository.findSumWorkTimeForProject(project.getId());
+            return firstReportMapper.toProjectReportEntryDto(project,
+                    workTimeSum.orElse(0L) / HOURS_CONVERTER);
+        });
+    }
 
+    public ReportEntryDto getWorkTimeSumByProject(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Project with id: %d was not found.", id)));
 
+        Long workTimeSum = dailyTimeRepository.findSumWorkTimeForProject(id).get();
 
+        return firstReportMapper.toProjectReportEntryDto(project, workTimeSum / HOURS_CONVERTER);
+    }
 
-
-
-
+    // TODO: 08.03.2020 below maybe not useful, to delete
 
 //    public List<Account> getAll(Pageable pageable) {
 //        return accountRepository.findAll();
@@ -102,8 +99,6 @@ public class AccountService {
     public Page<Account> getAllWorkTime(Pageable pageable) {
         return accountRepository.findAll(pageable);
     }
-
-
 
 
 }

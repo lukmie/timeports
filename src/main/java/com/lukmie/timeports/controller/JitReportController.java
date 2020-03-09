@@ -24,15 +24,27 @@ public class JitReportController {
     private final AccountService accountService;
 
     @GetMapping("/account-worktime")
-    public ResponseEntity<ReportEntryDto> getWorkTimeByAccount(@PageableDefault(size = 15) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.getAllWorkTime(pageable));
+    public ResponseEntity<Page<ReportEntryDto>> getAllWorkTimeByAccount(@PageableDefault(size = 15) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.getAllAccountsWorkTime(pageable));
     }
 
     @GetMapping("/account-worktime/{id}")
     public ResponseEntity<ReportEntryDto> getWorkTimeByAccount(@PathVariable("id") Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.getWorkTimeByAccount(id));
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.getWorkTimeSumByAccount(id));
     }
 
+    @GetMapping("/project-worktime")
+    public ResponseEntity<Page<ReportEntryDto>> getAllWorkTimeByProject(@PageableDefault(size = 15) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.getAllProjectsWorkTime(pageable));
+    }
+
+    @GetMapping("/project-worktime/{id}")
+    public ResponseEntity<ReportEntryDto> getWorkTimeByProject(@PathVariable("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.getWorkTimeSumByProject(id));
+    }
+
+
+    // TODO: 08.03.2020 below maybe not usefull, to delete
 
     @GetMapping
     public Page<AccountDto> getAll(@PageableDefault(size = 15) Pageable pageable,
@@ -47,6 +59,6 @@ public class JitReportController {
 
     @GetMapping("/dx")
     public Page<ReportEntryDto> getAllXX(@PageableDefault(size = 5) Pageable pageable) {
-        return accountService.doSmthAll(pageable);
+        return accountService.getAllAccountsWorkTime(pageable);
     }
 }
