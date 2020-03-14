@@ -1,22 +1,12 @@
 package com.lukmie.timeports.service;
 
 import com.lukmie.timeports.entity.FlightReport;
-import com.lukmie.timeports.entity.FlightReportEntry;
 import com.lukmie.timeports.entity.WorkReport;
 import com.lukmie.timeports.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.lukmie.timeports.entity.FlightReport.buildFlightReport;
@@ -44,24 +34,24 @@ public class ReportService {
         return buildFlightReport(objects);
     }
 
-    public void configureCsvWriterAndPrint(HttpServletResponse resp) throws IOException {
-        csvSetupProperties(resp);
-        try (ICsvBeanWriter csvWriter = new CsvBeanWriter(resp.getWriter(), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
-            final String[] header = {"name", "surname", "client", "travelReservation", "sum"};
-            for (FlightReportEntry entry : flightsByClient().getEntries()) {
-                csvWriter.write(entry, header);
-            }
-        } catch (IOException e) {
-            log.warn("Error while creating CSV file", e);
-        }
-    }
-
-    private void csvSetupProperties(HttpServletResponse resp) throws IOException {
-        String fileName = "report.csv";
-        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
-        resp.setHeader(HttpHeaders.CONTENT_DISPOSITION, headerValue);
-        resp.setContentType("text/csv");
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        resp.getWriter().write("\uFEFF");
-    }
+//    public void configureCsvWriterAndPrint(HttpServletResponse resp) throws IOException {
+//        csvSetupProperties(resp);
+//        try (ICsvBeanWriter csvWriter = new CsvBeanWriter(resp.getWriter(), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
+//            final String[] header = {"name", "surname", "client", "travelReservation", "sum"};
+//            for (FlightReportEntry entry : flightsByClient().getEntries()) {
+//                csvWriter.write(entry, header);
+//            }
+//        } catch (IOException e) {
+//            log.warn("Error while creating CSV file", e);
+//        }
+//    }
+//
+//    private void csvSetupProperties(HttpServletResponse resp) throws IOException {
+//        String fileName = "report.csv";
+//        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+//        resp.setHeader(HttpHeaders.CONTENT_DISPOSITION, headerValue);
+//        resp.setContentType("text/csv");
+//        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+//        resp.getWriter().write("\uFEFF");
+//    }
 }
