@@ -2,6 +2,8 @@ package com.lukmie.timeports.controller;
 
 import com.lukmie.timeports.entity.BusinessTripReportEntry;
 import com.lukmie.timeports.service.BusinessTripReportService;
+import com.lukmie.timeports.service.CsvWriterService;
+import com.lukmie.timeports.component.ReportUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +21,11 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/business-trip-report")
+@RequestMapping("/api/business-trip")
 public class BusinessTripController {
 
     private final BusinessTripReportService businessTripReportService;
+    private final CsvWriterService csvWriterService;
 
     @GetMapping("/partial-report/accounts")
     public ResponseEntity<Page<BusinessTripReportEntry>> getBusinessTripAccountsReport(@PageableDefault(size = 15) Pageable pageable) {
@@ -32,11 +35,12 @@ public class BusinessTripController {
     @GetMapping("/partial-report/accounts/csv")
     public void getBusinessTripAccountsReportCsv(@PageableDefault(size = 15) Pageable pageable,
                                                  HttpServletResponse response) throws IOException {
-        businessTripReportService.getBusinessTripAccountsReportToCsv(response, pageable);
+        Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripAccountsReport(pageable);
+        csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.partialTripReportHeader, "partial-trip-accounts.csv");
     }
 
     @GetMapping("/partial-report/accounts/{name-surname}")
-    public ResponseEntity<List<BusinessTripReportEntry>> getBusinessTripAccountsReport(@PathVariable("name-surname") String name) {
+    public ResponseEntity<List<BusinessTripReportEntry>> getBusinessTripAccountsReportByAccountName(@PathVariable("name-surname") String name) {
         return ResponseEntity.status(HttpStatus.OK).body(businessTripReportService.getBusinessTripAccountsByName(name));
     }
 
@@ -48,11 +52,12 @@ public class BusinessTripController {
     @GetMapping("/partial-report/projects/csv")
     public void getBusinessTripProjectsReportCsv(@PageableDefault(size = 15) Pageable pageable,
                                                  HttpServletResponse response) throws IOException {
-        businessTripReportService.getBusinessTripProjectsReportToCsv(response, pageable);
+        Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripProjectsReport(pageable);
+        csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.partialTripReportHeader, "partial-trip-reports.csv");
     }
 
     @GetMapping("/partial-report/projects/{name}")
-    public ResponseEntity<List<BusinessTripReportEntry>> getBusinessTripProjectsReport(@PathVariable("name") String name) {
+    public ResponseEntity<List<BusinessTripReportEntry>> getBusinessTripProjectsReportByProjectName(@PathVariable("name") String name) {
         return ResponseEntity.status(HttpStatus.OK).body(businessTripReportService.getBusinessTripProjectsReportByName(name));
     }
 
@@ -64,7 +69,8 @@ public class BusinessTripController {
     @GetMapping("/partial-report/clients/csv")
     public void getBusinessTripClientsReportCsv(@PageableDefault(size = 15) Pageable pageable,
                                                 HttpServletResponse response) throws IOException {
-        businessTripReportService.getBusinessTripClientsReportToCsv(response, pageable);
+        Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripClientsReport(pageable);
+        csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.partialTripReportHeader, "partial-trip-clients.csv");
     }
 
     @GetMapping("/partial-report/clients/{name}")
@@ -74,13 +80,14 @@ public class BusinessTripController {
 
     @GetMapping("/overall-report")
     public ResponseEntity<Page<BusinessTripReportEntry>> getAllWorkTime(@PageableDefault(size = 15) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(businessTripReportService.getBusinessTripPerAccountReport(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(businessTripReportService.getAllWorkTimeReport(pageable));
     }
 
     @GetMapping("/overall-report/csv")
     public void getAllWorkTimeCsv(@PageableDefault(size = 15) Pageable pageable,
                                   HttpServletResponse response) throws IOException {
-        businessTripReportService.getBusinessTripPerAccountReportToCsv(response, pageable);
+        Page<BusinessTripReportEntry> page = businessTripReportService.getAllWorkTimeReport(pageable);
+        csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.overallTripReportHeader, "overall-trip-accounts.csv");
     }
 
     @GetMapping("/overall-report/accounts/{name-surname}")
@@ -93,7 +100,8 @@ public class BusinessTripController {
     public void getBusinessTripByAccountNameCsv(@PageableDefault(size = 5) Pageable pageable,
                                                 @PathVariable("name-surname") String nameSurname,
                                                 HttpServletResponse response) throws IOException {
-        businessTripReportService.getBusinessTripPerAccountReportToCsv(response, pageable, nameSurname);
+        Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripPerAccountReport(pageable, nameSurname);
+        csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.overallTripReportHeader, "overall-trip-accounts-by-name.csv");
     }
 
     @GetMapping("/overall-report/projects/{name}")
@@ -106,7 +114,8 @@ public class BusinessTripController {
     public void getBusinessTripByProjectNameCsv(@PageableDefault(size = 5) Pageable pageable,
                                                 @PathVariable("name") String projectName,
                                                 HttpServletResponse response) throws IOException {
-        businessTripReportService.getBusinessTripPerProjectReportToCsv(response, pageable, projectName);
+        Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripPerProjectReport(pageable, projectName);
+        csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.overallTripReportHeader, "overall-trip-projects-by-name.csv");
     }
 
     @GetMapping("/overall-report/clients/{name}")
@@ -119,6 +128,7 @@ public class BusinessTripController {
     public void getBusinessTripByClientName(@PageableDefault(size = 5) Pageable pageable,
                                             @PathVariable("name") String clientName,
                                             HttpServletResponse response) throws IOException {
-        businessTripReportService.getBusinessTripPerClientReportToCsv(response, pageable, clientName);
+        Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripPerClientReport(pageable, clientName);
+        csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.overallTripReportHeader, "overall-trip-clients-by-name.csv");
     }
 }
