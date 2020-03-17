@@ -116,7 +116,6 @@ public class WorkTimeRepository {
     }
 
     private void addSorting(Pageable pageable, StringBuilder queryBuilder) {
-//        Sort sort = pageable.getSort();
         if (Objects.nonNull(pageable.getSort()) && pageable.getSort().isSorted()) {
             Sort.Order order = pageable.getSort().iterator().next();
             String property = order.getProperty();

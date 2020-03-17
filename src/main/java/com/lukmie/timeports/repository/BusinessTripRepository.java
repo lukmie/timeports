@@ -165,16 +165,6 @@ public class BusinessTripRepository {
         Query query = entityManager.createNativeQuery(queryBuilder.toString())
                 .setParameter("accountNameSurname", nameSurname);
 
-//        String sqlQuery = OVERALL_REPORT_SELECT_QUERY +
-//                "where a.name = :accountName\n" +
-//                "  and a.surname = :accountSurname\n" +
-//                "group by a.name, a.surname, p.name, c.name, bt.insurancebuyby, bt.travelreservationmadeby,\n" +
-//                "         bt.accommodationreservationmadeby;";
-//
-//        Query query = entityManager.createNativeQuery(sqlQuery)
-//                .setParameter("accountName", name)
-//                .setParameter("accountSurname", surname);
-
         return query.getResultList();
     }
 
