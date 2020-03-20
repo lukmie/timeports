@@ -104,29 +104,29 @@ public class BusinessTripController {
         csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.overallTripReportHeader, "overall-trip-accounts-by-name.csv");
     }
 
-    @GetMapping("/overall-report/projects/{name}")
+    @GetMapping("/overall-report/projects/{project-name}")
     public ResponseEntity<Page<BusinessTripReportEntry>> getBusinessTripByProjectName(@PageableDefault(size = 5) Pageable pageable,
-                                                                                      @PathVariable("name") String projectName) {
+                                                                                      @PathVariable("project-name") String projectName) {
         return ResponseEntity.status(HttpStatus.OK).body(businessTripReportService.getBusinessTripPerProjectReport(pageable, projectName));
     }
 
-    @GetMapping("/overall-report/projects/{name}/csv")
+    @GetMapping("/overall-report/projects/{project-name}/csv")
     public void getBusinessTripByProjectNameCsv(@PageableDefault(size = 5) Pageable pageable,
-                                                @PathVariable("name") String projectName,
+                                                @PathVariable("project-name") String projectName,
                                                 HttpServletResponse response) throws IOException {
         Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripPerProjectReport(pageable, projectName);
         csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.overallTripReportHeader, "overall-trip-projects-by-name.csv");
     }
 
-    @GetMapping("/overall-report/clients/{name}")
+    @GetMapping("/overall-report/clients/{client-name}")
     public ResponseEntity<Page<BusinessTripReportEntry>> getBusinessTripByClientName(@PageableDefault(size = 5) Pageable pageable,
-                                                                                     @PathVariable("name") String clientName) {
+                                                                                     @PathVariable("client-name") String clientName) {
         return ResponseEntity.status(HttpStatus.OK).body(businessTripReportService.getBusinessTripPerClientReport(pageable, clientName));
     }
 
-    @GetMapping("/overall-report/clients/{name}/csv")
+    @GetMapping("/overall-report/clients/{client-name}/csv")
     public void getBusinessTripByClientName(@PageableDefault(size = 5) Pageable pageable,
-                                            @PathVariable("name") String clientName,
+                                            @PathVariable("client-name") String clientName,
                                             HttpServletResponse response) throws IOException {
         Page<BusinessTripReportEntry> page = businessTripReportService.getBusinessTripPerClientReport(pageable, clientName);
         csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.overallTripReportHeader, "overall-trip-clients-by-name.csv");

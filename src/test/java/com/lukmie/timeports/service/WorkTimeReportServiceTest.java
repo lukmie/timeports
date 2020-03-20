@@ -36,11 +36,11 @@ class WorkTimeReportServiceTest {
     @Mock
     private ReportUtils reportUtils;
 
-    @Mock
-    private Pageable pageable;
-
     @InjectMocks
     private WorkTimeReportService workTimeReportService;
+
+    @Mock
+    private Pageable pageable;
 
     private WorkTimeReportEntry workTimeReportEntry1, workTimeReportEntry2;
 

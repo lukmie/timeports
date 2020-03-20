@@ -51,9 +51,45 @@ public class WorkTimeReportService {
         return reportUtils.createPageFromListOfBusinessTripReportEntry(list, pageable);
     }
 
+    public Page<WorkTimeReportEntry> getMostHoursInOneDayReport(Pageable pageable, Integer yearFrom,
+                                                                   Integer yearTo, Integer monthFrom, Integer monthTo) {
+        List<Object[]> result = workTimeRepository.getMostHoursInOneDay(yearFrom, yearTo, monthFrom, monthTo);
+        List<WorkTimeReportEntry> list = createReport(result);
+
+        return reportUtils.createPageFromListOfBusinessTripReportEntry(list, pageable);
+    }
+
+    public Page<WorkTimeReportEntry> getTimeSheetsCompletingReport(Pageable pageable, Integer yearFrom,
+                                                                Integer yearTo, Integer monthFrom, Integer monthTo) {
+        List<Object[]> result = workTimeRepository.getTimeSheetsCompleting(pageable, yearFrom, yearTo, monthFrom, monthTo);
+        List<WorkTimeReportEntry> list = createCompletingTimeSheetReport(result);
+
+        return reportUtils.createPageFromListOfBusinessTripReportEntry(list, pageable);
+    }
+
+    public Page<WorkTimeReportEntry> getCoreHoursReport(Pageable pageable, Integer yearFrom,
+                                                        Integer yearTo, Integer monthFrom, Integer monthTo) {
+        List<Object[]> result = workTimeRepository.getCoreHours(pageable, yearFrom, yearTo, monthFrom, monthTo);
+        List<WorkTimeReportEntry> list = createCoreHoursReport(result);
+
+        return reportUtils.createPageFromListOfBusinessTripReportEntry(list, pageable);
+    }
+
     private List<WorkTimeReportEntry> createReport(List<Object[]> result) {
         return result.stream()
                 .map(WorkTimeReportEntry::buildOverallEntry)
+                .collect(Collectors.toList());
+    }
+
+    private List<WorkTimeReportEntry> createCompletingTimeSheetReport(List<Object[]> result) {
+        return result.stream()
+                .map(WorkTimeReportEntry::buildTimeSheetEntry)
+                .collect(Collectors.toList());
+    }
+
+    private List<WorkTimeReportEntry> createCoreHoursReport(List<Object[]> result) {
+        return result.stream()
+                .map(WorkTimeReportEntry::buildCoreHoursSheetEntry)
                 .collect(Collectors.toList());
     }
 }

@@ -36,4 +36,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(new BCryptPasswordEncoder())
                 .passwordAttribute("userPassword");
     }
+
+//    #WeJit ldap
+//    @Autowired
+//    public void configureAuthenticationProviders(
+//            Environment environment,
+//            LdapProperties ldapProperties,
+//            AuthenticationManagerBuilder auth) throws Exception {
+//
+//        auth.ldapAuthentication()
+//                .userDnPatterns("uid={0},ou=users,dc=jitsolutions,dc=pl")
+//                .groupSearchBase("ou=ldap_groups,dc=jitsolutions,dc=pl")
+//                .groupRoleAttribute("cn")
+//                .groupSearchFilter("(uniqueMember={0})")
+//                .contextSource()
+//                .url(ldapProperties.determineUrls(environment)[0])
+//                .managerDn(ldapProperties.getUsername())
+//                .managerPassword(ldapProperties.getPassword());
+//    }
+
 }

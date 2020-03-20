@@ -69,9 +69,9 @@ public class WorkTimeController {
         csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.workTimeReportHeader, "report-by-account-name.csv");
     }
 
-    @GetMapping("/report/projects/{name}")
+    @GetMapping("/report/projects/{project-name}")
     public ResponseEntity<Page<WorkTimeReportEntry>> getWorkTimeReportByProject(@PageableDefault(size = 15) Pageable pageable,
-                                                                                @PathVariable("name") String name,
+                                                                                @PathVariable("project-name") String name,
                                                                                 @RequestParam(required = false, defaultValue = "2019") Integer yearFrom,
                                                                                 @RequestParam(required = false, defaultValue = "2019") Integer yearTo,
                                                                                 @RequestParam(required = false, defaultValue = "1") Integer monthFrom,
@@ -79,9 +79,9 @@ public class WorkTimeController {
         return ResponseEntity.status(HttpStatus.OK).body(workTimeReportService.getWorkTimeReportByProjectName(pageable, name, yearFrom, yearTo, monthFrom, monthTo));
     }
 
-    @GetMapping("/report/projects/{name}/csv")
+    @GetMapping("/report/projects/{project-name}/csv")
     public void getWorkTimeReportByProjectCsv(@PageableDefault(size = 15) Pageable pageable,
-                                              @PathVariable("name") String name,
+                                              @PathVariable("project-name") String name,
                                               @RequestParam(required = false, defaultValue = "2019") Integer yearFrom,
                                               @RequestParam(required = false, defaultValue = "2019") Integer yearTo,
                                               @RequestParam(required = false, defaultValue = "1") Integer monthFrom,
@@ -91,9 +91,9 @@ public class WorkTimeController {
         csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.workTimeReportHeader, "report-by-project-name.csv");
     }
 
-    @GetMapping("/report/clients/{name}")
+    @GetMapping("/report/clients/{client-name}")
     public ResponseEntity<Page<WorkTimeReportEntry>> getWorkTimeReportByClient(@PageableDefault(size = 15) Pageable pageable,
-                                                                               @PathVariable("name") String name,
+                                                                               @PathVariable("client-name") String name,
                                                                                @RequestParam(required = false, defaultValue = "2019") Integer yearFrom,
                                                                                @RequestParam(required = false, defaultValue = "2019") Integer yearTo,
                                                                                @RequestParam(required = false, defaultValue = "1") Integer monthFrom,
@@ -101,9 +101,9 @@ public class WorkTimeController {
         return ResponseEntity.status(HttpStatus.OK).body(workTimeReportService.getWorkTimeReportByClientName(pageable, name, yearFrom, yearTo, monthFrom, monthTo));
     }
 
-    @GetMapping("/report/clients/{name}/csv")
+    @GetMapping("/report/clients/{client-name}/csv")
     public void getWorkTimeReportByClientCsv(@PageableDefault(size = 15) Pageable pageable,
-                                             @PathVariable("name") String name,
+                                             @PathVariable("client-name") String name,
                                              @RequestParam(required = false, defaultValue = "2019") Integer yearFrom,
                                              @RequestParam(required = false, defaultValue = "2019") Integer yearTo,
                                              @RequestParam(required = false, defaultValue = "1") Integer monthFrom,
@@ -111,5 +111,32 @@ public class WorkTimeController {
                                              HttpServletResponse response) throws IOException {
         Page<WorkTimeReportEntry> page = workTimeReportService.getWorkTimeReportByClientName(pageable, name, yearFrom, yearTo, monthFrom, monthTo);
         csvWriterService.configureCsvWriterAndPrint(response, page, ReportUtils.workTimeReportHeader, "report-by-client-name.csv");
+    }
+
+    @GetMapping("/report/most-hours-per-day")
+    public ResponseEntity<Page<WorkTimeReportEntry>> getMostHoursInOneDayReport(@PageableDefault(size = 15) Pageable pageable,
+                                                                               @RequestParam(required = false, defaultValue = "2019") Integer yearFrom,
+                                                                               @RequestParam(required = false, defaultValue = "2019") Integer yearTo,
+                                                                               @RequestParam(required = false, defaultValue = "1") Integer monthFrom,
+                                                                               @RequestParam(required = false, defaultValue = "12") Integer monthTo) {
+        return ResponseEntity.status(HttpStatus.OK).body(workTimeReportService.getMostHoursInOneDayReport(pageable, yearFrom, yearTo, monthFrom, monthTo));
+    }
+
+    @GetMapping("/report/completing-timeports")
+    public ResponseEntity<Page<WorkTimeReportEntry>> getTimeSheetsCompletingReport(@PageableDefault(size = 15) Pageable pageable,
+                                                                               @RequestParam(required = false, defaultValue = "2019") Integer yearFrom,
+                                                                               @RequestParam(required = false, defaultValue = "2019") Integer yearTo,
+                                                                               @RequestParam(required = false, defaultValue = "1") Integer monthFrom,
+                                                                               @RequestParam(required = false, defaultValue = "12") Integer monthTo) {
+        return ResponseEntity.status(HttpStatus.OK).body(workTimeReportService.getTimeSheetsCompletingReport(pageable, yearFrom, yearTo, monthFrom, monthTo));
+    }
+
+    @GetMapping("/report/core-hours")
+    public ResponseEntity<Page<WorkTimeReportEntry>> getCoreHoursReport(@PageableDefault(size = 15) Pageable pageable,
+                                                                        @RequestParam(required = false, defaultValue = "2019") Integer yearFrom,
+                                                                        @RequestParam(required = false, defaultValue = "2019") Integer yearTo,
+                                                                        @RequestParam(required = false, defaultValue = "1") Integer monthFrom,
+                                                                        @RequestParam(required = false, defaultValue = "12") Integer monthTo) {
+        return ResponseEntity.status(HttpStatus.OK).body(workTimeReportService.getCoreHoursReport(pageable, yearFrom, yearTo, monthFrom, monthTo));
     }
 }
